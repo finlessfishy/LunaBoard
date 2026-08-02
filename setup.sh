@@ -1,12 +1,23 @@
 # setup.sh for setting up python dependencies and verifying files
 
-
-
-#echo "Installing python dependencies..."
+echo "setup.sh"
 
 
 
+echo ""
+echo "Installing python dependencies..."
+echo ""
+
+pip install lupa --break-system-packages
+pip install pynput --break-system-packages
+pip install sounddevice --break-system-packages
+pip install termios --break-system-packages
+
+
+
+echo ""
 echo "Verifying files..."
+echo ""
 
 FILE1="main.py"
 FILE2="lunaboard.lua"
