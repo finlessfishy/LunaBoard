@@ -107,15 +107,19 @@ def audio_callback(outdata, frames, time_info, status):
     global t
     buffer = np.zeros(frames, dtype=np.float32)
 
-    # Resolve currently active note key and octave number
-    current_key = list(active_note_keys)[-1] if active_note_keys else None
+    # Convert active key set to a Lua table for polyphonic mixing
+    note_keys_list = list(active_note_keys) if active_note_keys else None
+    lua_keys_table = lua.table_from(note_keys_list) if note_keys_list else None
+
     current_octave = (
         int(list(active_octave_keys)[-1]) if active_octave_keys else 4
     )
 
     for i in range(frames):
-        # Pass time, active key, and selected octave into Lua
-        buffer[i] = get_sample_fn(t / sample_rate, current_key, current_octave)
+        # Pass Lua table of active keys into Lua
+        buffer[i] = get_sample_fn(
+            t / sample_rate, lua_keys_table, current_octave
+        )
         t += 1
 
     outdata[:] = buffer.reshape(-1, 1)

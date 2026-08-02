@@ -46,33 +46,25 @@ function square_wave(freq, time)
     return sine_wave(freq, time) >= 0 and 0.3 or -0.3
 end
 
--- Python calls this for every audio frame
--- key_char: active key (e.g., 'a', 'g') or nil
--- octave_num: integer 2 through 5 (defaults to 4 if nil)
-function get_sample(time, key_char, octave_num)
-    if not key_char then
-        return 0.0 -- Silence when no key is held
-    end
-
+-- Render a single note's waveform tone
+function render_note(key_char, octave_num, time)
     local upper_key = string.upper(key_char)
     local base_note = key_to_note[upper_key]
 
     if not base_note then
-        return 0.0 -- Unmapped key
+        return 0.0
     end
 
-    -- Default to octave 4 if no valid octave is supplied
     local oct = octave_num or 4
     if oct < 2 or oct > 5 then
         oct = 4
     end
 
-    -- K and L wrap to the next octave up automatically for natural scale flow
+    -- K and L wrap to the next octave up automatically
     if upper_key == "K" or upper_key == "L" then
         oct = math.min(oct + 1, 5)
     end
 
-    -- Build note key string (e.g., "C4", "G2")
     local note_key = base_note .. tostring(oct)
     local freq = frequencies[note_key]
 
@@ -80,7 +72,35 @@ function get_sample(time, key_char, octave_num)
         return 0.0
     end
 
-    -- Blend sine and square wave for a crisp synth tone
-    local tone = (sine_wave(freq, time) * 0.6) + (square_wave(freq, time) * 0.4)
-    return tone * 0.5 -- Master volume scaling
+    -- Blend sine and square wave
+    return (sine_wave(freq, time) * 0.6) + (square_wave(freq, time) * 0.4)
+end
+
+-- Python calls this for every audio frame
+-- keys_table: table/array of active key characters (e.g., {'a', 'd', 'g'})
+-- octave_num: integer 2 through 5
+function get_sample(time, keys_table, octave_num)
+    if not keys_table or #keys_table == 0 then
+        return 0.0 -- Silence when no keys are held
+    end
+
+    local combined_tone = 0.0
+    local active_count = 0
+
+    -- Accumulate waveform samples for all currently pressed note keys
+    for i = 1, #keys_table do
+        local tone = render_note(keys_table[i], octave_num, time)
+        if tone ~= 0.0 then
+            combined_tone = combined_tone + tone
+            active_count = active_count + 1
+        end
+    end
+
+    if active_count == 0 then
+        return 0.0
+    end
+
+    -- Scale volume dynamically by note count to prevent clipping/distortion
+    local mix_scaling = 1 / math.sqrt(active_count)
+    return combined_tone * 0.3 * mix_scaling
 end
