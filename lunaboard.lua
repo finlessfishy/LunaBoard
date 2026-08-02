@@ -1,4 +1,4 @@
--- synth_config.lua
+-- lunaboard.lua
 
 -- Map note names to standard musical frequencies (Hz)
 local frequencies = {
@@ -24,6 +24,18 @@ local frequencies = {
   GS5 = 830.61, A5 = 880.00,  AS5 = 932.33, B5 = 987.77
 }
 
+-- Key-to-Note mapping (Maps physical key presses to note names in 'frequencies')
+local key_to_note = {
+    A = "C4",
+    S = "D4",
+    D = "E4",
+    F = "F4",
+    G = "G4",
+    H = "A4",
+    J = "B4",
+    K = "C5",
+    L = "D5"
+}
 
 -- Waveform synthesis
 function sine_wave(freq, time)
@@ -42,10 +54,15 @@ function get_sample(time, key_char)
     end
 
     local upper_key = string.upper(key_char)
-    local freq = frequencies[upper_key]
+    local note_name = key_to_note[upper_key]
 
-    if not freq then
+    if not note_name then
         return 0.0 -- Unmapped key
+    end
+
+    local freq = frequencies[note_name]
+    if not freq then
+        return 0.0
     end
 
     -- Blend sine and square wave for a crisp synth tone
