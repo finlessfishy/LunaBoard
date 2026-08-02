@@ -1,32 +1,44 @@
-version = "0.1.1"
+version = "0.2.3"
 
-import atexit
-import os
-import random
-import sys
-import time
-from lupa import LuaRuntime
-import numpy as np
-from pylibs import colors, inputlib, utilities as util
-from pynput import keyboard
-import sounddevice as sd
+from pylibs import utilities as util
 
-# Progress loader UI
-total = 11
+total = 12
 util.clear()
 print("Loading...")
-for i in range(1, total + 1):
-    print(util.progress_bar(i, total, clear=True))
-    time.sleep(0.02)  # Short delay for visual smoothness
+
+print(util.progress_bar(1, total, clear=True))
+import atexit
+print(util.progress_bar(2, total, clear=True))
+import os
+print(util.progress_bar(3, total, clear=True))
+import random
+print(util.progress_bar(4, total, clear=True))
+import sys
+print(util.progress_bar(5, total, clear=True))
+import time
+print(util.progress_bar(6, total, clear=True))
+from lupa import LuaRuntime
+print(util.progress_bar(7, total, clear=True))
+import numpy as np
+print(util.progress_bar(8, total, clear=True))
+from pylibs import colors
+print(util.progress_bar(9, total, clear=True))
+from pylibs import inputlib
+print(util.progress_bar(10, total, clear=True))
+from pynput import keyboard
+print(util.progress_bar(11, total, clear=True))
+import sounddevice as sd
+print(util.progress_bar(12, total, clear=True))
+import termios
+print(util.progress_bar(13, total, clear=True))
+import tty
+print(util.progress_bar(14, total, clear=True))
 
 util.clear()
 
 # --- TERMINAL ECHO SUPPRESSION ---
 old_settings = None
 if os.name == "posix" and sys.stdin.isatty():
-    import termios
-    import tty
-
     try:
         old_settings = termios.tcgetattr(sys.stdin)
         tty.setcbreak(sys.stdin.fileno())
@@ -36,8 +48,6 @@ if os.name == "posix" and sys.stdin.isatty():
 
 def cleanup_terminal():
     if old_settings and os.name == "posix" and sys.stdin.isatty():
-        import termios
-
         termios.tcsetattr(sys.stdin, termios.TCSADRAIN, old_settings)
 
 
@@ -116,7 +126,7 @@ def audio_callback(outdata, frames, time_info, status):
 
 
 # Print UI header
-print(f"LunaBoard {version}")
+print(f"LunaBoard {version}\n")
 
 keylist = ["[A]", "[S]", "[D]", "[F]", "[G]", "[H]", "[J]", "[K]", "[L]"]
 
@@ -125,14 +135,12 @@ for k in keylist:
     color_val = random.choice(list(colors.colors_nr.values()))
     print(f"{color_val}{k}{colors.colors['R']} ", end="", flush=True)
 
-print("\nHold [1], [2], [3], [4], or [5] to select Octave (Defaults to 4).")
-print("Press Ctrl+C to exit.\n")
+print(F"\n {colors.colors["GRAY"]}Hold [1], [2], [3], [4], or [5] to select Octave (Defaults to 4).{colors.colors["R"]}")
+print("\nPress Ctrl+C to exit.\n")
 
 # Main execution loop
 try:
-    with sd.OutputStream(
-        channels=1, callback=audio_callback, samplerate=sample_rate
-    ):
+    with sd.OutputStream(channels=1, callback=audio_callback, samplerate=sample_rate):
         while True:
             time.sleep(0.1)  # Keeps main thread alive safely across Linux platforms
 except KeyboardInterrupt:
