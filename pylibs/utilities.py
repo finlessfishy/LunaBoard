@@ -17,10 +17,15 @@ def clear(old=False, test=False):
         os.system("cls" if os.name == "nt" else "clear")
 
 
-def progress_bar(current, total, bar_length=40):
+def progress_bar(current, total, bar_length=40, clear=False):
     percent = current / total
     filled_length = int(bar_length * percent)
     bar = "#" * filled_length + "-" * (bar_length - filled_length)
+    if clear == True:
+        try:
+            print("\033[2J\033[H", end="")
+        except:
+            os.system("cls" if os.name == "nt" else "clear")
     return f"\r[{bar}] {percent*100:5.1f}%"
 
 
