@@ -12,6 +12,8 @@ colors = {
 	"R": "\033[0m"
 }
 
+
+
 colors_nr = {
 	"RED": "\033[31m",
 	"GREEN": "\033[32m",
