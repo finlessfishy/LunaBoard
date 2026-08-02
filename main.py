@@ -1,36 +1,48 @@
 from pylibs import utilities as util
 
 total = 11
+util.clear()
+print("Loading...")
 print(util.progress_bar(1, total, clear=True))
 import os
 
+print("Loading...")
 print(util.progress_bar(2, total, clear=True))
 import sys
 
+print("Loading...")
 print(util.progress_bar(3, total, clear=True))
 import numpy as np
 
+print("Loading...")
 print(util.progress_bar(4, total, clear=True))
 import sounddevice as sd
 
+print("Loading...")
 print(util.progress_bar(5, total, clear=True))
 from lupa import LuaRuntime
 
+print("Loading...")
 print(util.progress_bar(6, total, clear=True))
 from pynput import keyboard
 
+print("Loading...")
 print(util.progress_bar(7, total, clear=True))
 import atexit
 
+print("Loading...")
 print(util.progress_bar(8, total, clear=True))
 from pylibs import inputlib
 
+print("Loading...")
 print(util.progress_bar(9, total, clear=True))
 import random
 
+print("Loading...")
 print(util.progress_bar(10, total, clear=True))
 from pylibs import colors
 
+print("Loading...")
 print(util.progress_bar(11, total, clear=True))
 
 util.clear()
@@ -147,7 +159,7 @@ for i in keylist:
         end='',
         flush=True,
     )
-print('\nHold [2], [3], [4], or [5] to select Octave (Defaults to 4).')
+print('\nHold [1], [2], [3], [4], or [5] to select Octave (Defaults to 4).')
 print('Press Ctrl+C to exit.\n')
 
 try:
@@ -157,4 +169,4 @@ try:
         while True:
             sd.sleep(1000)
 except KeyboardInterrupt:
-    print('\nShutting down synth...')
+    print('\nClosing...')
