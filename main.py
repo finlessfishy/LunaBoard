@@ -64,13 +64,20 @@ with open('lunaboard.lua', 'r') as f:
 
 get_sample_fn = lua.eval('get_sample')
 
-active_keys = set()
+# Track state
+active_note_keys = set()
+active_octave_keys = set()
+VALID_OCTAVES = {'2', '3', '4', '5'}
 
 
 def on_press(key):
     try:
         if hasattr(key, 'char') and key.char:
-            active_keys.add(key.char.lower())
+            char = key.char.lower()
+            if char in VALID_OCTAVES:
+                active_octave_keys.add(char)
+            else:
+                active_note_keys.add(char)
     except AttributeError:
         pass
 
@@ -78,7 +85,11 @@ def on_press(key):
 def on_release(key):
     try:
         if hasattr(key, 'char') and key.char:
-            active_keys.discard(key.char.lower())
+            char = key.char.lower()
+            if char in VALID_OCTAVES:
+                active_octave_keys.discard(char)
+            else:
+                active_note_keys.discard(char)
     except AttributeError:
         pass
 
@@ -96,12 +107,15 @@ def audio_callback(outdata, frames, time_info, status):
     global t
     buffer = np.zeros(frames, dtype=np.float32)
 
-    # Pick the most recently pressed key
-    current_key = list(active_keys)[-1] if active_keys else None
+    # Resolve currently active note key and octave number
+    current_key = list(active_note_keys)[-1] if active_note_keys else None
+    current_octave = (
+        int(list(active_octave_keys)[-1]) if active_octave_keys else 4
+    )
 
     for i in range(frames):
-        # Pass current time step and active key character into Lua
-        buffer[i] = get_sample_fn(t / sample_rate, current_key)
+        # Pass time, active key, and selected octave into Lua
+        buffer[i] = get_sample_fn(t / sample_rate, current_key, current_octave)
         t += 1
 
     outdata[:] = buffer.reshape(-1, 1)
@@ -129,6 +143,7 @@ for i in keylist:
         end='',
         flush=True,
     )
+print('\nHold [2], [3], [4], or [5] to select Octave (Defaults to 4).')
 print('Press Ctrl+C to exit.\n')
 
 try:
@@ -138,4 +153,4 @@ try:
         while True:
             sd.sleep(1000)
 except KeyboardInterrupt:
-    print('\nShutting down synth...')s
+    print('\nShutting down synth...')

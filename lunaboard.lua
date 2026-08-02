@@ -24,17 +24,17 @@ local frequencies = {
   GS5 = 830.61, A5 = 880.00,  AS5 = 932.33, B5 = 987.77
 }
 
--- Key-to-Note mapping (Maps physical key presses to note names in 'frequencies')
+-- Key-to-Base Note mapping
 local key_to_note = {
-    A = "C4",
-    S = "D4",
-    D = "E4",
-    F = "F4",
-    G = "G4",
-    H = "A4",
-    J = "B4",
-    K = "C5",
-    L = "D5"
+    A = "C",
+    S = "D",
+    D = "E",
+    F = "F",
+    G = "G",
+    H = "A",
+    J = "B",
+    K = "C",
+    L = "D"
 }
 
 -- Waveform synthesis
@@ -48,19 +48,34 @@ end
 
 -- Python calls this for every audio frame
 -- key_char: active key (e.g., 'a', 'g') or nil
-function get_sample(time, key_char)
+-- octave_num: integer 2 through 5 (defaults to 4 if nil)
+function get_sample(time, key_char, octave_num)
     if not key_char then
         return 0.0 -- Silence when no key is held
     end
 
     local upper_key = string.upper(key_char)
-    local note_name = key_to_note[upper_key]
+    local base_note = key_to_note[upper_key]
 
-    if not note_name then
+    if not base_note then
         return 0.0 -- Unmapped key
     end
 
-    local freq = frequencies[note_name]
+    -- Default to octave 4 if no valid octave is supplied
+    local oct = octave_num or 4
+    if oct < 2 or oct > 5 then
+        oct = 4
+    end
+
+    -- K and L wrap to the next octave up automatically for natural scale flow
+    if upper_key == "K" or upper_key == "L" then
+        oct = math.min(oct + 1, 5)
+    end
+
+    -- Build note key string (e.g., "C4", "G2")
+    local note_key = base_note .. tostring(oct)
+    local freq = frequencies[note_key]
+
     if not freq then
         return 0.0
     end
