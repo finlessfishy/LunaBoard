@@ -1,3 +1,6 @@
+version = "0.1.0"
+
+
 from pylibs import utilities as util
 
 total = 11
@@ -138,7 +141,7 @@ def audio_callback(outdata, frames, time_info, status):
 
 
 # Run audio stream
-print('LunaBoard')
+print(f'LunaBoard {version}')
 
 keylist = [
     '[A]',
