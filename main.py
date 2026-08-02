@@ -135,7 +135,7 @@ for k in keylist:
     color_val = random.choice(list(colors.colors_nr.values()))
     print(f"{color_val}{k}{colors.colors['R']} ", end="", flush=True)
 
-print(F"\n {colors.colors["GRAY"]}Hold [1], [2], [3], [4], or [5] to select Octave (Defaults to 4).{colors.colors["R"]}")
+print(F"\n {colors.colors["GRAY"]}Hold [2], [3], [4], or [5] to select Octave (Defaults to 4).{colors.colors["R"]}")
 print("\nPress Ctrl+C to exit.\n")
 
 # Main execution loop
